@@ -1,0 +1,11 @@
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: PeeringDialer
+metadata:
+  name: dc4-default2
+  namespace: consul
+spec:
+  peer:
+    secret:
+      name: "peering-token-dc3-default-dc4-default"
+      key: "data"
+      backend: "kubernetes"

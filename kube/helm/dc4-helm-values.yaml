@@ -1,0 +1,123 @@
+global:
+  name: consul
+  domain: consul
+  datacenter: dc4
+  image: hashicorp/consul-enterprise:1.16.0-rc1-ent                                             # Select an image from: https://hub.docker.com/r/hashicorp/consul-enterprise/tags
+  # imageEnvoy: "envoyproxy/envoy:v1.25.1"                                                  # Pulls the latest supported when unspecified.
+  # imageK8S: docker.mirror.hashicorp.services/hashicorp/consul-k8s-control-plane:1.0.1     # What's this for?
+  # imageConsulDataplane: "hashicorp/consul-dataplane:1.1.0"                                # Pulls the latest when unspecified.
+
+  gossipEncryption:
+    secretName: consul-gossip-encryption-key
+    secretKey: key
+
+  acls:
+    manageSystemACLs: true
+    bootstrapToken:
+      secretName: consul-bootstrap-acl-token         # This is set to "root" in the doctorconsul deployment.
+      secretKey: key
+
+  tls:
+    enabled: true                                 # Required for Peering
+    httpsOnly: false                              # Turns on the HTTP UI
+    # caCert:                                     # In case we want to provide a root CA
+    #   secretName: consul-ca-cert
+    #   secretKey: tls.crt
+
+  enableConsulNamespaces: true                        # CRDs won't setup Consul namespaces correctly if this is false (default)
+
+  peering:
+    enabled: true
+
+  adminPartitions:
+    enabled: true
+    name: "default"
+
+  federation:
+    enabled: false
+
+  enterpriseLicense:
+    secretName: consul-license
+    secretKey: key
+    enableLicenseAutoload: true
+
+server:
+  replicas: 1
+  bootstrapExpect: 1
+  connect: true
+  exposeService:
+    enabled: true
+    type: LoadBalancer
+  # exposeGossipAndRPCPorts: true         #
+  resources:
+    requests:
+      memory: "100Mi"
+      cpu: "100m"
+    limits:
+      memory: "200Mi"          # After adding a second kube cluster for a Consul Dataplane cluster, the UI crashed OOM on server pod on UI refresh. This fixed it.
+      cpu: "100m"
+
+dns:
+  enabled: true
+  enableRedirection: true
+
+client:
+  enabled: false
+  grpc: true
+
+meshGateway:
+  enabled: True
+  replicas: 1
+  wanAddress:
+    source: "Service"
+    port: 8443
+  service:
+    type: LoadBalancer
+    port: 8443
+
+ui:
+  enabled: true
+  service:
+    type: LoadBalancer
+    port:
+      http: 80
+      # https: 443
+  metrics:
+    enabled: true
+    provider: "prometheus"
+    baseURL: http://prometheus-server
+    # baseURL: http://192.169.7.200:9090
+
+prometheus:
+  enabled: true
+
+apiGateway:
+  enabled: false
+
+connectInject:
+  enabled: true
+  default: false                 # Default
+  transparentProxy:
+    defaultEnabled: true         # Default
+  cni:
+    enabled: true
+    # enabled: false
+  consulNamespaces:
+    consulDestinationNamespace: "default"   # Ignored when mirroringK8S is true
+    mirroringK8S: true
+    mirroringK8SPrefix: ""
+  metrics:
+    defaultEnabled: true
+    defaultEnableMerging: false
+
+syncCatalog:
+  enabled: true
+  k8sPrefix: null
+  k8sDenyNamespaces: ["kube-system", "kube-public", "unicorn"]
+  consulNamespaces:
+    mirroringK8S: true
+    mirroringK8SPrefix: ""
+  # addK8SNamespaceSuffix: false        # Leave this disabled. It's a TRAP!!! if the service name matches the pod name, it'll get stomped.
+
+controller:       # Enabled CRDs
+  enabled: true
