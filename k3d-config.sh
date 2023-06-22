@@ -416,7 +416,7 @@ echo -e "${GRN}DC3-P1 (Cernunnos): Helm consul-k8s install${NC}"
 
 helm install consul hashicorp/consul -f ./kube/helm/dc3-p1-helm-values.yaml --namespace consul \
   --set externalServers.k8sAuthMethodHost=$DC3_K8S_IP \
-  --set externalServers.hosts[0]=$DC3_LB_IP 
+  --set externalServers.hosts[0]=$DC3_LB_IP \
   --version 1.2.0-rc1 \
   --debug
 # ^^^ --dry-run to test variable interpolation... if it actually worked.
@@ -449,7 +449,7 @@ kubectl create secret generic consul-license --namespace consul --from-literal=k
 echo -e ""
 echo -e "${GRN}DC4: Helm consul-k8s install${NC}"
 
-helm install consul hashicorp/consul -f ./kube/helm/dc4-helm-values.yaml --namespace consul --debug
+helm install consul hashicorp/consul -f ./kube/helm/dc4-helm-values.yaml --namespace consul --debug --version 1.2.0-rc1
 
 echo -e ""
 echo -e "${GRN}DC4: Extract CA cert / key, bootstrap token, and partition token for child Consul Dataplane clusters ${NC}"
