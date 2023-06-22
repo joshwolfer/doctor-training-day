@@ -4,8 +4,8 @@ global:
   datacenter: dc3
   image: hashicorp/consul-enterprise:1.16.0-rc1-ent                                             # Select an image from: https://hub.docker.com/r/hashicorp/consul-enterprise/tags
   # imageEnvoy: "envoyproxy/envoy:v1.25.1"                                                  # Pulls the latest supported when unspecified.
-  # imageK8S: docker.mirror.hashicorp.services/hashicorp/consul-k8s-control-plane:1.0.1     # What's this for?
-  # imageConsulDataplane: "hashicorp/consul-dataplane:1.1.0"                                # Pulls the latest when unspecified.
+  imageK8S: hashicorp/consul-k8s-control-plane:1.2.0-rc1     # What's this for?
+  imageConsulDataplane: hashicorp/consul-dataplane:1.1.2                                   # Pulls the latest when unspecified.
 
   gossipEncryption:
     secretName: consul-gossip-encryption-key

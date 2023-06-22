@@ -156,6 +156,7 @@ echo -e "${GRN}DC3-P1 (Cernunnos): Helm consul-k8s install${NC}"
 helm install consul hashicorp/consul -f ./kube/helm/dc3-p1-helm-values.yaml --namespace consul \
   --set externalServers.k8sAuthMethodHost=$DC3_P1_K8S_IP \
   --set externalServers.hosts[0]=$DC3_LB_IP \
+  --version 1.2.0-rc1 \ 
   --debug
 # ^^^ --dry-run to test variable interpolation... if it actually worked.
 
@@ -246,6 +247,7 @@ echo -e "${GRN}DC4-P1 (Taranis): Helm consul-k8s install${NC}"
 helm install consul hashicorp/consul -f ./kube/helm/dc4-p1-helm-values.yaml --namespace consul \
   --set externalServers.k8sAuthMethodHost=$DC4_K8S_IP \
   --set externalServers.hosts[0]=$DC4_LB_IP \
+  --version 1.2.0-rc1 \
   --debug
 # ^^^ --dry-run to test variable interpolation... if it actually worked.
 
