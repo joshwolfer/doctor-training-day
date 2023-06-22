@@ -416,7 +416,7 @@ echo -e "${GRN}DC3-P1 (Cernunnos): Helm consul-k8s install${NC}"
 
 helm install consul hashicorp/consul -f ./kube/helm/dc3-p1-helm-values.yaml --namespace consul \
   --set externalServers.k8sAuthMethodHost=$DC3_K8S_IP \
-  --set externalServers.hosts[0]=$DC3_LB_IP 
+  --set externalServers.hosts[0]=$DC3_LB_IP \
   --version 1.2.0-rc1 \
   --debug
 # ^^^ --dry-run to test variable interpolation... if it actually worked.
@@ -449,7 +449,7 @@ kubectl create secret generic consul-license --namespace consul --from-literal=k
 echo -e ""
 echo -e "${GRN}DC4: Helm consul-k8s install${NC}"
 
-helm install consul hashicorp/consul -f ./kube/helm/dc4-helm-values.yaml --namespace consul --debug
+helm install consul hashicorp/consul -f ./kube/helm/dc4-helm-values.yaml --namespace consul --debug --version 1.2.0-rc1
 
 echo -e ""
 echo -e "${GRN}DC4: Extract CA cert / key, bootstrap token, and partition token for child Consul Dataplane clusters ${NC}"
@@ -889,7 +889,7 @@ echo -e "------------------------------------------${NC}"
 # Add the terminating-gateway ACL policy to the TGW Role, so it can actually service:write the services it fronts. DUMB.
 consul acl policy create -name "Terminating-Gateway-Service-Write" -rules @./kube/configs/dc3/acl/terminating-gateway.hcl -http-addr="$DC3"
 export DC3_TGW_ROLEID=$(consul acl role list -http-addr="$DC3" -format=json | jq -r '.[] | select(.Name == "consul-terminating-gateway-acl-role") | .ID')
-consul acl role update -id $DC3_TGW_ROLEID -policy-name "Terminating-Gateway-Service-Write"
+consul acl role update -http-addr="$DC3" -id $DC3_TGW_ROLEID -policy-name "Terminating-Gateway-Service-Write"
 
 echo -e "${GRN}DC3 (default): Terminating-Gateway config   ${NC}"
 kubectl apply --context $KDC3 -f ./kube/configs/dc3/tgw/terminating-gateway.yaml
